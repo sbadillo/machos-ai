@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MACHOS.AI — Implémentation. Zéro bullshit.</title>
+<style>
+  :root{
+    --black:#0a0a0a;
+    --coal:#141414;
+    --gold:#ffb300;
+    --gold-2:#ffd24a;
+    --red:#e63946;
+    --white:#f5f2ea;
+    --muted:#a9a39a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  .stripe{
+    background:
+      repeating-linear-gradient(-45deg,#0d0d0d 0 24px,#101010 24px 48px);
+    position:fixed;inset:0;z-index:-1;
+  }
+  h1,h2,h3,.impact{font-family:'Arial Black','Impact','Franklin Gothic Bold',sans-serif;letter-spacing:.5px;text-transform:uppercase;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+  a{color:inherit;text-decoration:none;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:2px solid #1e1e1e;}
+  .logo{font-family:'Arial Black',sans-serif;font-size:22px;text-transform:uppercase;}
+  .logo span{color:var(--gold);}
+  nav .links{display:flex;gap:22px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+  nav .links a:hover{color:var(--gold);}
+  .cta-nav{background:var(--gold);color:#000;font-weight:900;padding:9px 16px;text-transform:uppercase;font-size:12px;letter-spacing:1px;}
+  .cta-nav:hover{background:var(--gold-2);}
+
+  header{padding:90px 0 50px;text-align:center;}
+  .eyebrow{color:var(--red);font-weight:900;letter-spacing:4px;text-transform:uppercase;font-size:12px;margin-bottom:18px;}
+  header h1{font-size:clamp(42px,9vw,110px);line-height:.95;margin-bottom:8px;}
+  header h1 .gold{color:var(--gold);}
+  header .sub{color:var(--muted);font-size:clamp(16px,2.6vw,21px);max-width:640px;margin:18px auto 0;}
+  .hero-cta{display:flex;gap:14px;justify-content:center;margin-top:34px;flex-wrap:wrap;}
+  .btn{display:inline-block;padding:16px 30px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;font-size:14px;border:2px solid transparent;cursor:pointer;}
+  .btn-gold{background:var(--gold);color:#000;}
+  .btn-gold:hover{background:var(--gold-2);}
+  .btn-ghost{border-color:#3a3a3a;color:var(--white);}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:34px 0;border-top:2px solid #1e1e1e;border-bottom:2px solid #1e1e1e;}
+  .stat{text-align:center;}
+  .stat .num{font-family:'Arial Black',sans-serif;font-size:clamp(30px,5vw,52px);color:var(--gold);}
+  .stat .lbl{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-top:6px;}
+
+  section{padding:70px 0;}
+  .sec-head{text-align:center;margin-bottom:46px;}
+  .sec-head .kicker{color:var(--red);font-weight:900;letter-spacing:3px;text-transform:uppercase;font-size:12px;}
+  .sec-head h2{font-size:clamp(30px,5vw,54px);margin-top:10px;}
+  .sec-head p{color:var(--muted);max-width:560px;margin:14px auto 0;}
+
+  .team{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .guy{background:var(--coal);border:2px solid #232323;padding:30px 24px;text-align:center;position:relative;transition:.2s;}
+  .guy:hover{border-color:var(--gold);transform:translateY(-4px);}
+  .guy .avatar{font-size:64px;margin-bottom:14px;}
+  .guy h3{font-size:24px;}
+  .guy .role{color:var(--gold);font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:12px;margin:8px 0 14px;}
+  .guy p{color:var(--muted);font-size:15px;}
+
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .pillar{border:2px solid #232323;background:#0d0d0d;padding:34px 26px;}
+  .pillar .icon{font-size:44px;}
+  .pillar h3{font-size:22px;margin:14px 0 10px;}
+  .pillar p{color:var(--muted);font-size:15px;}
+
+  .method{background:var(--coal);border-top:2px solid #1e1e1e;border-bottom:2px solid #1e1e1e;}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:step;}
+  .step{position:relative;padding:20px;}
+  .step .n{font-family:'Arial Black',sans-serif;font-size:52px;color:var(--red);opacity:.9;line-height:1;}
+  .step h4{font-size:19px;margin:12px 0 8px;}
+  .step p{color:var(--muted);font-size:14px;}
+
+  .quotes{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .quote{background:#0d0d0d;border-left:4px solid var(--gold);padding:26px;}
+  .quote p{font-size:17px;font-style:italic;}
+  .quote .who{color:var(--gold);font-weight:900;margin-top:14px;text-transform:uppercase;font-size:13px;letter-spacing:1px;}
+
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;}
+  .price{background:var(--coal);border:2px solid #232323;padding:32px 26px;display:flex;flex-direction:column;}
+  .price.hot{border-color:var(--gold);}
+  .price .tag{color:var(--red);font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:11px;}
+  .price .amount{font-family:'Arial Black',sans-serif;font-size:42px;margin:10px 0;color:var(--white);}
+  .price .amount small{font-size:15px;color:var(--muted);}
+  .price ul{list-style:none;margin:14px 0 26px;flex:1;}
+  .price li{color:var(--muted);padding:6px 0;border-bottom:1px solid #1e1e1e;font-size:14px;}
+  .price li::before{content:"✓ ";color:var(--gold);font-weight:900;}
+
+  .final{padding:100px 0;text-align:center;}
+  .final h2{font-size:clamp(36px,7vw,80px);line-height:.95;}
+  .final h2 .gold{color:var(--gold);}
+  .final p{color:var(--muted);margin:18px auto 0;max-width:560px;}
+
+  footer{padding:40px 0;border-top:2px solid #1e1e1e;text-align:center;color:#555;font-size:13px;}
+  footer .impact{color:var(--gold);}
+
+  @media(max-width:760px){
+    nav .links{display:none;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .team,.pillars,.steps,.quotes,.pricing{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+
+<nav>
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+    <div class="logo">MACHOS<span>.AI</span></div>
+    <div class="links">
+      <a href="#force">La Force</a>
+      <a href="#methode">Méthode</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#equipe">Les Mecs</a>
+    </div>
+    <a class="cta-nav" href="#demo">Démo</a>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Formation IA pour entreprises — mais en vrai</div>
+    <h1>Implémentation.<br><span class="gold">Zéro bullshit.</span></h1>
+    <p class="sub">Trois mecs. Pas de slides, pas de webinars, pas de « synergie ». On branche l'IA dans ta boîte, et on soulève la prod.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="#demo">Réserver une démo (sans slides)</a>
+      <a class="btn btn-ghost" href="#equipe">Voir les mecs</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="num">0</div><div class="lbl">Slide</div></div>
+    <div class="stat"><div class="num">3</div><div class="lbl">Mecs</div></div>
+    <div class="stat"><div class="num">100%</div><div class="lbl">Torse nu en sprint</div></div>
+    <div class="stat"><div class="num">1</div><div class="lbl">Promesse : ça tourne</div></div>
+  </div>
+</div>
+
+<section id="equipe">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">L'équipe</div>
+      <h2>Les trois mecs</h2>
+      <p>On n'enseigne pas l'IA. On l'implémente. Voici ceux qui soulèvent ton SI.</p>
+    </div>
+    <div class="team">
+      <div class="guy">
+        <div class="avatar">💪</div>
+        <h3>Kévin</h3>
+        <div class="role">La Force</div>
+        <p>Soulève ton pipeline de données comme il soulève la fonte. 180 kg au développé couché, zéro incident de prod depuis qu'il a regardé le serveur dans les yeux.</p>
+      </div>
+      <div class="guy">
+        <div class="avatar">🔥</div>
+        <h3>Jordan</h3>
+        <div class="role">L'Implémentation</div>
+        <p>Pousse en prod avec les dents. Pas de staging, pas de peur. Le build passe du premier coup — ou Jordan casse quelque chose. Il ne casse jamais rien.</p>
+      </div>
+      <div class="guy">
+        <div class="avatar">🫡</div>
+        <h3>Thierry</h3>
+        <div class="role">Zéro Bullshit</div>
+        <p>Il a dit non une fois, en 2019. Depuis, plus personne ne lui parle de « montée en compétence ». Il livre, point.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="force" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Nos valeurs</div>
+      <h2>Ce qu'on propose</h2>
+      <p>90 % des formations IA : des slides, des promesses, des certifications en PDF. Ici : des résultats.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="icon">🏋️</div>
+        <h3>La Force</h3>
+        <p>Des modèles costauds, des pipelines musclés, une infra qui encaisse. On soulève ton architecture, pas des slides.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">⚙️</div>
+        <h3>L'Implémentation</h3>
+        <p>Pas de théorie, pas de démo jouet. On branche l'IA dans ton vrai système, en production, devant tes équipes.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">🚫</div>
+        <h3>Zéro Bullshit</h3>
+        <p>Pas de « synergie », pas de « roadmap 2027 », pas de certification PDF. Juste ce qui marche, dit cash.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="method" id="methode">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">La méthode</div>
+      <h2>Comment ça se passe</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h4>On arrive</h4><p>On enlève les slides. Toutes. Même celles que t'as préparées.</p></div>
+      <div class="step"><div class="n">02</div><h4>On branche</h4><p>L'IA dans ton SI. Pas dans un PDF, pas dans un « plan d'action ».</p></div>
+      <div class="step"><div class="n">03</div><h4>On soulève</h4><p>La prod, le ROI, tout. On ne s'arrête pas tant que ça ne tourne pas.</p></div>
+      <div class="step"><div class="n">04</div><h4>On part</h4><p>Zéro bullshit laissé derrière. Juste un système qui marche.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Ils ont osé</div>
+      <h2>Témoignages</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote">
+        <p>« Avant, j'avais une formation IA. Après, j'avais un pipeline qui tourne. Merci les gars. »</p>
+        <div class="who">Michel — DSI, 47 ans, torse bombé</div>
+      </div>
+      <div class="quote">
+        <p>« Ils ont dit non à notre comité de pilotage. On les a embauchés sur-le-champ. »</p>
+        <div class="who">Direction — Groupe Macho &amp; Fils</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tarifs" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Tarifs</div>
+      <h2>Le prix de la force</h2>
+    </div>
+    <div class="pricing">
+      <div class="price">
+        <div class="tag">Starter</div>
+        <div class="amount">1 999 €<small> / jour</small></div>
+        <ul>
+          <li>Un mec</li>
+          <li>Un café noir</li>
+          <li>Il regarde ton SI</li>
+        </ul>
+        <a class="btn btn-ghost" href="#demo">Commencer</a>
+      </div>
+      <div class="price hot">
+        <div class="tag">Pro ★</div>
+        <div class="amount">4 999 €<small> / jour</small></div>
+        <ul>
+          <li>Les trois mecs</li>
+          <li>Implémentation complète</li>
+          <li>Zéro bullshit garanti</li>
+        </ul>
+        <a class="btn btn-gold" href="#demo">Commencer</a>
+      </div>
+      <div class="price">
+        <div class="tag">Ultimate</div>
+        <div class="amount">9 999 €<small> / jour</small></div>
+        <ul>
+          <li>Les trois mecs</li>
+          <li>Ils reviennent une fois par mois soulever la prod</li>
+          <li>T-shirt MACHOS.AI inclus</li>
+        </ul>
+        <a class="btn btn-ghost" href="#demo">Commencer</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="demo">
+  <div class="wrap">
+    <h2>Arrête de scroller.<br><span class="gold">Implémente.</span></h2>
+    <p>Le pendant viril des IA Sisters. Trois mecs. Une mission : ton IA, en prod, sans bullshit.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="#">Parler à un macho</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="impact">MACHOS.AI © 2026</div>
+    <p style="margin-top:8px;">Site parodique. Aucune certification PDF n'a été délivrée. Tous droits sur les pecs réservés. 💪</p>
+  </div>
+</footer>
+
+</body>
+</html>
